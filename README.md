@@ -214,4 +214,22 @@ The strategy performance should be evaluated in the context of:
 5. **Market Applicability**: Strategy would likely perform better in sideways/range-bound markets
 6. **Transaction Costs**: High trading frequency (521 trades) increases costs and reduces net returns
 
+### 🔍 Parameter Optimization for Different Risk Profiles
+
+We analyzed the parameter grid not only for the highest Sharpe ratio, but also for other risk/return preferences:
+
+| Profile                | Window | Threshold | Sharpe Ratio | Total Return | Max Drawdown | Trades |
+|------------------------|--------|-----------|--------------|--------------|--------------|--------|
+| **Best Sharpe**        | 300    | 0.8       | 1.45         | 22.83%       | -90.20%      | 521    |
+| **Best Total Return**  | 300    | 1.2       | 1.09         | 45.15%       | -82.38%      | 393    |
+| **Best Calmar Ratio**  | 300    | 1.2       | 1.09         | 45.15%       | -82.38%      | 393    |
+| **Lowest Max Drawdown**| 400    | 1.3       | 0.88         | 40.35%       | -76.73%      | 275    |
+| **Best Risk-Return**   | 300    | 1.2       | 1.09         | 45.15%       | -82.38%      | 393    |
+
+**Recommendations by Risk Profile:**
+- Conservative (Low Risk): Window=400, Threshold=1.3
+- Balanced (Risk-Adjusted): Window=300, Threshold=0.8
+- Aggressive (High Return): Window=300, Threshold=1.2
+- Optimal Trade-off: Window=300, Threshold=1.2
+
 Thanks for reading! Open to communicate further!

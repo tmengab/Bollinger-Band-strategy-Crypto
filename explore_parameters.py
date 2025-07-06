@@ -186,19 +186,109 @@ for window in window_sizes:
         except Exception as e:
             print(f"  Error: {e}")
 
-# Find the best combination
+# Find different types of best combinations
 if results:
-    best_result = max(results, key=lambda x: x['sharpe'])
+    # Convert to DataFrame for easier analysis
+    results_df = pd.DataFrame(results)
     
-    print(f"\n=== BEST PARAMETER COMBINATION ===")
-    print(f"Window Size: {best_result['window']}")
-    print(f"Threshold: {best_result['threshold']}")
-    print(f"Sharpe Ratio: {best_result['sharpe']:.4f}")
-    print(f"Total Return: {best_result['total_return']:.2%}")
-    print(f"CAGR: {best_result['cagr']:.2%}")
-    print(f"Max Drawdown: {best_result['max_drawdown']:.2%}")
-    print(f"Calmar Ratio: {best_result['calmar']:.4f}")
-    print(f"Number of Trades: {best_result['trades']}")
+    print(f"\n=== PARAMETER ANALYSIS ===")
+    print(f"Total combinations tested: {len(results_df)}")
+    
+    # 1. Best Sharpe Ratio (Risk-adjusted returns)
+    best_sharpe = results_df.loc[results_df['sharpe'].idxmax()]
+    print(f"\n🥇 BEST SHARPE RATIO:")
+    print(f"Window Size: {best_sharpe['window']}")
+    print(f"Threshold: {best_sharpe['threshold']}")
+    print(f"Sharpe Ratio: {best_sharpe['sharpe']:.4f}")
+    print(f"Total Return: {best_sharpe['total_return']:.2%}")
+    print(f"Max Drawdown: {best_sharpe['max_drawdown']:.2%}")
+    print(f"Trades: {best_sharpe['trades']}")
+    
+    # 2. Best Total Return (Absolute returns)
+    best_return = results_df.loc[results_df['total_return'].idxmax()]
+    print(f"\n💰 BEST TOTAL RETURN:")
+    print(f"Window Size: {best_return['window']}")
+    print(f"Threshold: {best_return['threshold']}")
+    print(f"Total Return: {best_return['total_return']:.2%}")
+    print(f"Sharpe Ratio: {best_return['sharpe']:.4f}")
+    print(f"Max Drawdown: {best_return['max_drawdown']:.2%}")
+    print(f"Trades: {best_return['trades']}")
+    
+    # 3. Best Calmar Ratio (Return per unit of drawdown)
+    best_calmar = results_df.loc[results_df['calmar'].idxmax()]
+    print(f"\n📈 BEST CALMAR RATIO:")
+    print(f"Window Size: {best_calmar['window']}")
+    print(f"Threshold: {best_calmar['threshold']}")
+    print(f"Calmar Ratio: {best_calmar['calmar']:.4f}")
+    print(f"Total Return: {best_calmar['total_return']:.2%}")
+    print(f"Max Drawdown: {best_calmar['max_drawdown']:.2%}")
+    print(f"Sharpe Ratio: {best_calmar['sharpe']:.4f}")
+    print(f"Trades: {best_calmar['trades']}")
+    
+    # 4. Lowest Max Drawdown (Conservative)
+    best_drawdown = results_df.loc[results_df['max_drawdown'].idxmax()]  # Note: max_drawdown is negative, so idxmax gives least negative
+    print(f"\n🛡️ LOWEST MAX DRAWDOWN:")
+    print(f"Window Size: {best_drawdown['window']}")
+    print(f"Threshold: {best_drawdown['threshold']}")
+    print(f"Max Drawdown: {best_drawdown['max_drawdown']:.2%}")
+    print(f"Total Return: {best_drawdown['total_return']:.2%}")
+    print(f"Sharpe Ratio: {best_drawdown['sharpe']:.4f}")
+    print(f"Trades: {best_drawdown['trades']}")
+    
+    # 5. Best Risk-Return Trade-off (Custom metric)
+    # Define a custom score that balances return and risk
+    results_df['risk_return_score'] = results_df['total_return'] / abs(results_df['max_drawdown'])
+    best_risk_return = results_df.loc[results_df['risk_return_score'].idxmax()]
+    print(f"\n⚖️ BEST RISK-RETURN TRADE-OFF:")
+    print(f"Window Size: {best_risk_return['window']}")
+    print(f"Threshold: {best_risk_return['threshold']}")
+    print(f"Risk-Return Score: {best_risk_return['risk_return_score']:.4f}")
+    print(f"Total Return: {best_risk_return['total_return']:.2%}")
+    print(f"Max Drawdown: {best_risk_return['max_drawdown']:.2%}")
+    print(f"Sharpe Ratio: {best_risk_return['sharpe']:.4f}")
+    print(f"Trades: {best_risk_return['trades']}")
+    
+    # 6. Most Active Trading (High frequency)
+    most_trades = results_df.loc[results_df['trades'].idxmax()]
+    print(f"\n🔄 MOST ACTIVE TRADING:")
+    print(f"Window Size: {most_trades['window']}")
+    print(f"Threshold: {most_trades['threshold']}")
+    print(f"Trades: {most_trades['trades']}")
+    print(f"Total Return: {most_trades['total_return']:.2%}")
+    print(f"Sharpe Ratio: {most_trades['sharpe']:.4f}")
+    print(f"Max Drawdown: {most_trades['max_drawdown']:.2%}")
+    
+    # 7. Least Active Trading (Low frequency)
+    least_trades = results_df.loc[results_df['trades'].idxmin()]
+    print(f"\n⏰ LEAST ACTIVE TRADING:")
+    print(f"Window Size: {least_trades['window']}")
+    print(f"Threshold: {least_trades['threshold']}")
+    print(f"Trades: {least_trades['trades']}")
+    print(f"Total Return: {least_trades['total_return']:.2%}")
+    print(f"Sharpe Ratio: {least_trades['sharpe']:.4f}")
+    print(f"Max Drawdown: {least_trades['max_drawdown']:.2%}")
+    
+    # Summary table
+    print(f"\n📊 SUMMARY COMPARISON:")
+    summary_data = [
+        ['Best Sharpe', best_sharpe['window'], best_sharpe['threshold'], best_sharpe['sharpe'], best_sharpe['total_return'], best_sharpe['max_drawdown'], best_sharpe['trades']],
+        ['Best Return', best_return['window'], best_return['threshold'], best_return['sharpe'], best_return['total_return'], best_return['max_drawdown'], best_return['trades']],
+        ['Best Calmar', best_calmar['window'], best_calmar['threshold'], best_calmar['sharpe'], best_calmar['total_return'], best_calmar['max_drawdown'], best_calmar['trades']],
+        ['Lowest DD', best_drawdown['window'], best_drawdown['threshold'], best_drawdown['sharpe'], best_drawdown['total_return'], best_drawdown['max_drawdown'], best_drawdown['trades']],
+        ['Best Risk-Return', best_risk_return['window'], best_risk_return['threshold'], best_risk_return['sharpe'], best_risk_return['total_return'], best_risk_return['max_drawdown'], best_risk_return['trades']],
+        ['Most Trades', most_trades['window'], most_trades['threshold'], most_trades['sharpe'], most_trades['total_return'], most_trades['max_drawdown'], most_trades['trades']],
+        ['Least Trades', least_trades['window'], least_trades['threshold'], least_trades['sharpe'], least_trades['total_return'], least_trades['max_drawdown'], least_trades['trades']]
+    ]
+    
+    summary_df = pd.DataFrame(summary_data, columns=['Metric', 'Window', 'Threshold', 'Sharpe', 'Return', 'MaxDD', 'Trades'])
+    print(summary_df.to_string(index=False, float_format='%.4f'))
+    
+    # Recommendations based on different risk profiles
+    print(f"\n💡 RECOMMENDATIONS BY RISK PROFILE:")
+    print(f"🟢 Conservative (Low Risk): Window={best_drawdown['window']}, Threshold={best_drawdown['threshold']}")
+    print(f"🟡 Balanced (Risk-Adjusted): Window={best_sharpe['window']}, Threshold={best_sharpe['threshold']}")
+    print(f"🔴 Aggressive (High Return): Window={best_return['window']}, Threshold={best_return['threshold']}")
+    print(f"⚖️ Optimal Trade-off: Window={best_risk_return['window']}, Threshold={best_risk_return['threshold']}")
     
     # Compare with current best
     current_best = next((r for r in results if r['window'] == current_best_window and r['threshold'] == current_best_threshold), None)
